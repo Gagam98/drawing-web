@@ -84,7 +84,7 @@ export const saveAuthData = (loginResponse: LoginResponse): void => {
 export const loginUser = async (
   loginData: LoginRequest
 ): Promise<LoginResponse> => {
-  const response = await fetch("http://localhost:8080/api/auth/login", {
+  const response = await fetch("https://drawing-web-gyrt.onrender.com/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -111,7 +111,7 @@ export const loginUser = async (
 export const registerUser = async (
   registerData: RegisterRequest
 ): Promise<LoginResponse> => {
-  const response = await fetch("http://localhost:8080/api/auth/register", {
+  const response = await fetch("https://drawing-web-gyrt.onrender.com/api/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

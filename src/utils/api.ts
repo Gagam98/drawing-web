@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "https://drawing-web-gyrt.onrender.com";
 
 // 기본 API 응답 인터페이스
 interface BaseApiResponse {

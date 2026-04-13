@@ -1,7 +1,7 @@
 // apiService.ts
 import { getToken } from "./authLogin";
 
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = "https://drawing-web-gyrt.onrender.com/api";
 
 export interface Drawing {
   id?: number;
