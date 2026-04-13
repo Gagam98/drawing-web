@@ -174,9 +174,10 @@ def get_current_user(
     token = credentials.credentials
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
+        user_id_str = payload.get("sub")
+        if user_id_str is None:
             raise HTTPException(status_code=401, detail="Invalid Request")
+        user_id = int(user_id_str)
     except jwt.PyJWTError as e:
         raise HTTPException(status_code=401, detail=f"Invalid Token (PyJWTError): {str(e)}")
     except Exception as e:
@@ -211,7 +212,7 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
             status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다."
         )
 
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": str(user.id)})
     return AuthResponse(token=token, user=UserResponse.from_db(user))
 
 
@@ -227,7 +228,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
-    token = create_access_token({"sub": new_user.id})
+    token = create_access_token({"sub": str(new_user.id)})
     return AuthResponse(token=token, user=UserResponse.from_db(new_user))
 
 
