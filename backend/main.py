@@ -177,8 +177,10 @@ def get_current_user(
         user_id = payload.get("sub")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid Request")
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401, detail="Invalid Token")
+    except jwt.PyJWTError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid Token (PyJWTError): {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid Token (General): {str(e)}")
 
     user = db.query(DBUser).filter(DBUser.id == user_id).first()
     if user is None:
