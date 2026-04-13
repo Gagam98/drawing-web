@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 from typing import List, Optional
 
 from fastapi import FastAPI, Depends, HTTPException, status
@@ -13,12 +14,18 @@ import jwt
 # ====================
 # Configuration & Setup
 # ====================
-SECRET_KEY = "super-secret-key-change-this-in-production"
+SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-this-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days expiration
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./canvas_app.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./canvas_app.db")
+# SQLAlchemy needs postgresql:// instead of postgres:// which Render often provides
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -250,5 +257,6 @@ def delete_drawing(dwg_id: int, current_user: DBUser = Depends(get_current_user)
 
 if __name__ == "__main__":
     import uvicorn
-    # Spring Boot에서 사용하던 8080 포트 그대로 사용
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    # Render assigns the active port dynamically via the PORT env variable
+    port = int(os.getenv("PORT", 8080))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
